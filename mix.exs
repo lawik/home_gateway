@@ -48,7 +48,6 @@ defmodule HomeGateway.MixProject do
         # Dependencies for specific targets
         {:scenic_driver_nerves_rpi, "~> 0.10", target: @all_targets},
         {:scenic_driver_nerves_touch, "~> 0.9", targets: @all_targets},
-        {:my_sensors, path: "../my_sensors", targets: @all_targets},
         {:my_sensors_mysgw, path: "../my_sensors_mysgw", targets: @all_targets},
         {:nerves_system_rpi, "~> 1.6", runtime: false, targets: :rpi},
         {:nerves_system_rpi0, "~> 1.6", runtime: false, targets: :rpi0},
@@ -68,7 +67,9 @@ defmodule HomeGateway.MixProject do
       {:shoehorn, "~> 0.4"},
       {:ring_logger, "~> 0.6"},
       {:toolshed, "~> 0.2"},
-      {:scenic, "~> 0.10.0"}
+      {:scenic, "~> 0.10.0"},
+      {:sqlite_ecto2, "~> 2.3"},
+      {:my_sensors, path: "../my_sensors"}
     ]
   end
 

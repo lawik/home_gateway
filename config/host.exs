@@ -12,3 +12,8 @@ config :home_gateway, :viewport, %{
     }
   ]
 }
+
+config :my_sensors, MySensors.Repo,
+  adapter: Sqlite.Ecto2,
+  database: "my_sensors_#{Mix.env()}.sqlite",
+  loggers: []

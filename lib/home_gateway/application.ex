@@ -10,7 +10,7 @@ defmodule HomeGateway.Application do
   def start(_type, _args) do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: HomeGateway.Supervisor]
+    opts = [strategy: :one_for_all, name: HomeGateway.Supervisor]
     Supervisor.start_link(children(@target), opts)
   end
 
@@ -20,7 +20,8 @@ defmodule HomeGateway.Application do
     [
       # Starts a worker by calling: HomeGateway.Worker.start_link(arg)
       # {HomeGateway.Worker, arg},
-      {Scenic, viewports: [main_viewport_config]}
+      {Scenic, viewports: [main_viewport_config]},
+      FakeSensor
     ]
   end
 
