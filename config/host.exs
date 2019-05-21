@@ -2,7 +2,7 @@ use Mix.Config
 
 config :home_gateway, :viewport, %{
   name: :main_viewport,
-  default_scene: {HomeGateway.Scene.SysInfo, nil},
+  default_scene: {HomeGateway.Scene.Main, nil},
   size: {800, 480},
   opts: [scale: 1.0],
   drivers: [

@@ -3,7 +3,7 @@ use Mix.Config
 config :home_gateway, :viewport, %{
   name: :main_viewport,
   # default_scene: {ExampleScenicNerves.Scene.Crosshair, nil},
-  default_scene: {ExampleScenicNerves.Scene.SysInfo, nil},
+  default_scene: {ExampleScenicNerves.Scene.Main, nil},
   size: {800, 480},
   opts: [scale: 1.0],
   drivers: [
