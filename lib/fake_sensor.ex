@@ -18,7 +18,6 @@ defmodule FakeSensor do
             inserted_at: DateTime.utc_now(),
             updated_at: DateTime.utc_now()
         }
-        IO.inspect(sensor_value)
         dispatch(sensor_value, :insert_or_update)
         schedule_data()
         {:noreply, nil}

@@ -2,13 +2,11 @@ defmodule HomeGateway.Scene.Main do
   use Scenic.Scene
   alias Scenic.Graph
 
-  import Scenic.Primitives
-  import Scenic.Components
-  alias Scenic.Component
-  alias HomeGateway.Components.Sensor
+  alias HomeGateway.Components.{Sensor, LineChart}
 
   @graph Graph.build(font_size: 22, font: :roboto_mono, theme: :light)
   |> Sensor.add_to_graph({nil, "Temperature"})
+  |> LineChart.add_to_graph({nil, "Temperature", []}, t: {128, 128})
 
          # |> group(
          #   fn g ->
@@ -41,7 +39,7 @@ defmodule HomeGateway.Scene.Main do
          # )
 
   # --------------------------------------------------------
-  def init(_, opts) do
+  def init(_, _) do
     #:ok = Broadcast.subscribe()
     
     {:ok, @graph, push: @graph}
