@@ -45,7 +45,7 @@ defmodule HomeGateway.Components.LineChart do
       end
 
     # build the graph
-    graph = chart(background_color)
+    graph = chart(background_color, values)
       #|> do_aligned_text(:label, :center, text, theme.text, label_width, label_vpos+value_vpos, font_size)
 
     :ok = Broadcast.subscribe()
@@ -60,62 +60,61 @@ defmodule HomeGateway.Components.LineChart do
       opts: opts,
       id: id,
       background_color: background_color,
-      values: []
+      values: values
     }
 
     {:ok, state, push: graph}
   end
 
-  defp chart(background_color, values \\ []) do
+  defp chart(background_color, values) do
     value_items = Enum.reduce(values, 0, fn line, value_count ->
       max(value_count, length(line))
     end)
 
     value_top = Enum.reduce(values, 0, fn line, value_top ->
-      Enum.reduce(line, 0, &max/2)
+      Enum.reduce(line, value_top, &max/2)
     end)
-
-    value_bottom = Enum.reduce(values, 0, fn line, value_bottom ->
-      Enum.reduce(line, 0, &min/2)
+    
+    value_bottom = Enum.reduce(values, value_top, fn line, value_bottom ->
+      Enum.reduce(line, value_bottom, &min/2)
     end)
 
     graph =
       Graph.build(font: @default_font, font_size: @default_font_size)
-      #|> rectangle(@default_chart_dimensions, fill: background_color)
+      |> rectangle(@default_chart_dimensions, fill: background_color)
 
-    IO.puts("Items:")
-    IO.inspect(value_items)
     {width, height} = @default_chart_dimensions
-    graph = if value_items > 0 do
+    if value_items > 0 do
       line_length = width/value_items
-      IO.puts("Length:")
-      IO.inspect(line_length)
       value_range = value_top-value_bottom
+      value_range = case value_range do
+        0.0 -> 1.0
+        _ -> value_range
+      end
       line_multiplier = height/(value_range)
-      IO.puts("Multiplier:")
-      IO.inspect(line_multiplier)
-      
-      graph = Enum.reduce(values, graph, fn dataset, graph ->
-        {graph, _} = Enum.reduce(dataset, {graph, nil}, fn value, {graph, last_pos} ->
-          target_y = (value-value_bottom)*line_multiplier
-          {last_x, _last_y} = last_pos = case last_pos do
-            nil -> {0, target_y}
-            _ -> last_pos
+
+      path_commands = Enum.reduce(values, [], fn dataset, commands ->
+        {command_list, _} = Enum.reduce(dataset, {[:begin], nil}, fn value, {command_list, last_pos} ->
+          target_y = height-(((value-value_bottom)*line_multiplier))  # Reverse y coordinates and start at the bottom
+           {last_pos, command_list} = case last_pos do
+            nil -> 
+              {{0, target_y}, [{:move_to, 0, target_y} | command_list]}
+            _ -> {last_pos, command_list}
           end
 
-          target_pos = {last_x+line_length, target_y}
-          line_data = {last_pos, target_pos}
-          IO.inspect(line_data)
-          graph = graph
-          |> line(line_data, fill: :green, stroke: {3, :green})
-          {graph, target_pos}
+          {last_x, _last_y} = last_pos
+
+          target_x = last_x+line_length
+          {[{:line_to, target_x, target_y} | command_list], {target_x, target_y}}
         end)
-        graph
+        [command_list | commands]
       end)
 
-      IO.inspect(graph)
-
-      graph
+      Enum.reduce(path_commands, graph, fn command_list, graph ->
+        command_list = Enum.reverse(command_list)
+        graph
+        |> path(command_list, stroke: {3, :green}, join: :round)
+      end)
     else
       graph
     end
@@ -123,14 +122,11 @@ defmodule HomeGateway.Components.LineChart do
 
   def handle_info({:my_sensors, {:insert_or_update, %SensorValue{sensor_id: sensor_id} = sv}}, %{sensor_id: sensor_id2} = state) when sensor_id == sensor_id2 do
     values = state.values
-    IO.inspect(values)
     first_line = List.first(values)
     values = case first_line do
       nil -> [[sv.value]]
       _ -> [first_line ++ [sv.value]]
     end
-
-    IO.inspect(values)
     
     graph = chart(state.background_color, values)
     state = state
