@@ -16,10 +16,13 @@ defmodule HomeGateway.Application do
 
   # List all child processes to be supervised
   def children(:host) do
+    import Supervisor.Spec
+
     main_viewport_config = Application.get_env(:home_gateway, :viewport)
     [
       # Starts a worker by calling: HomeGateway.Worker.start_link(arg)
       # {HomeGateway.Worker, arg},
+      HomeGatewayWeb.Endpoint,
       {Scenic, viewports: [main_viewport_config]},
       FakeSensor
     ]
@@ -32,5 +35,12 @@ defmodule HomeGateway.Application do
       # {HomeGateway.Worker, arg},
       {Scenic, viewports: [main_viewport_config]}
     ]
+  end
+
+  # Tell Phoenix to update the endpoint configuration
+  # whenever the application is updated.
+  def config_change(changed, _new, removed) do
+    HomeGatewayWeb.Endpoint.config_change(changed, removed)
+    :ok
   end
 end

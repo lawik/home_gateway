@@ -7,6 +7,22 @@ use Mix.Config
 
 target = System.get_env("MIX_TARGET") || "host"
 
+# Configures the endpoint
+config :home_gateway, HomeGatewayWeb.Endpoint,
+  url: [host: "localhost"],
+  secret_key_base: "nJqeaI1P9zS10nlEY9dPvdtm2p87ODrz8VBCOOPL5lJbkflEiuhwMVhmOi/k+T0r",
+  render_errors: [view: HomeGatewayWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: HomeGateway.PubSub, adapter: Phoenix.PubSub.PG2]
+
+# Configures Elixir's Logger
+config :logger, :console,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:user_id]
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env()}.exs"
+
 if target != "host" do
   # Customize non-Elixir parts of the firmware. See
   # https://hexdocs.pm/nerves/advanced-configuration.html for details.

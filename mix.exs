@@ -10,6 +10,8 @@ defmodule HomeGateway.MixProject do
       version: "0.1.0",
       elixir: "~> 1.8",
       archives: [nerves_bootstrap: "~> 1.5"],
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       build_embedded: true,
       aliases: [loadconfig: [&bootstrap/1]],
@@ -32,10 +34,15 @@ defmodule HomeGateway.MixProject do
     ]
   end
 
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
   defp deps("host") do
-    deps(nil) ++ [
-      {:scenic_driver_glfw, "~> 0.10"}
-    ]
+    deps(nil) ++
+      [
+        {:scenic_driver_glfw, "~> 0.10"}
+      ]
   end
 
   defp deps(target) when target in @all_targets do
@@ -68,8 +75,15 @@ defmodule HomeGateway.MixProject do
       {:ring_logger, "~> 0.6"},
       {:toolshed, "~> 0.2"},
       {:scenic, "~> 0.10.0"},
+      # {:scenic, path: "../scenic", override: true},
       {:sqlite_ecto2, "~> 2.3"},
-      {:my_sensors, path: "../my_sensors"}
+      {:my_sensors, path: "../my_sensors"},
+      {:phoenix, "~> 1.3.4"},
+      {:phoenix_pubsub, "~> 1.0"},
+      {:phoenix_html, "~> 2.10"},
+      {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:gettext, "~> 0.11"},
+      {:plug_cowboy, "~> 1.0"}
     ]
   end
 

@@ -13,6 +13,15 @@ config :home_gateway, :viewport, %{
   ]
 }
 
+config :file_system, :fs_inotify, executable_file: "deps/file_system/priv/mac_listener"
+
+# case :os.type() do
+#   {:unix, :darwin} ->
+
+#   _ ->
+#     nil
+# end
+
 config :my_sensors, MySensors.Repo,
   adapter: Sqlite.Ecto2,
   database: "my_sensors_#{Mix.env()}.sqlite",

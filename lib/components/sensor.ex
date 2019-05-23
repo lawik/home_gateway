@@ -2,8 +2,6 @@ defmodule HomeGateway.Components.Sensor do
   use Scenic.Component, has_children: false
 
   alias Scenic.Graph
-  alias Scenic.Primitive
-  alias Scenic.ViewPort
   alias Scenic.Primitive.Style.Theme
   import Scenic.Primitives
 
